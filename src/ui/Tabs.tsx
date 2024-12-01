@@ -1,12 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "../utils/cn";
 
 type Tab = {
     title: string;
     value: string;
-    content?: string | React.ReactNode ;
+    content?: string | React.ReactNode;
 };
+
+interface TabsProps {
+    tabs: Tab[];
+    containerClassName?: string;
+    activeTabClassName?: string;
+    tabClassName?: string;
+    contentClassName?: string;
+    activeTab?: string | null;
+    onTabChange?: (value: string) => void;
+}
 
 export const Tabs = ({
                          tabs: propTabs,
@@ -14,15 +24,29 @@ export const Tabs = ({
                          activeTabClassName,
                          tabClassName,
                          contentClassName,
-                     }: {
-    tabs: Tab[];
-    containerClassName?: string;
-    activeTabClassName?: string;
-    tabClassName?: string;
-    contentClassName?: string;
-}) => {
+                         activeTab,
+                         onTabChange,
+                     }: TabsProps) => {
     const [active, setActive] = useState<Tab>(propTabs[0]);
     const [tabs, setTabs] = useState<Tab[]>(propTabs);
+    const [hovering, setHovering] = useState(false);
+
+    // Update active tab when activeTab prop changes
+    useEffect(() => {
+        if (activeTab !== undefined && activeTab !== null) {
+            const newActiveTab = propTabs.find(tab => tab.value === activeTab);
+            if (newActiveTab) {
+                setActive(newActiveTab);
+                const idx = propTabs.indexOf(newActiveTab);
+                if (idx !== -1) {
+                    const newTabs = [...propTabs];
+                    const selectedTab = newTabs.splice(idx, 1);
+                    newTabs.unshift(selectedTab[0]);
+                    setTabs(newTabs);
+                }
+            }
+        }
+    }, [activeTab, propTabs]);
 
     const moveSelectedTabToTop = (idx: number) => {
         const newTabs = [...propTabs];
@@ -30,9 +54,8 @@ export const Tabs = ({
         newTabs.unshift(selectedTab[0]);
         setTabs(newTabs);
         setActive(newTabs[0]);
+        onTabChange?.(newTabs[0].value);
     };
-
-    const [hovering, setHovering] = useState(false);
 
     return (
         <>
@@ -67,8 +90,8 @@ export const Tabs = ({
                         )}
 
                         <span className="relative block text-primary">
-              {tab.title}
-            </span>
+                            {tab.title}
+                        </span>
                     </button>
                 ))}
             </div>
@@ -87,6 +110,7 @@ export const FadeInDiv = ({
                               className,
                               tabs,
                               hovering,
+                              active,
                           }: {
     className?: string;
     key?: string;

@@ -3,6 +3,7 @@ import { Playlist } from '../types/playlist';
 import { getPlaylists, deletePlaylist, removeVideoFromPlaylist } from '../utils/playlist';
 import { Tabs } from "../ui/Tabs";
 import { Button } from "@/ui/button.tsx";
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface PlaylistsPageProps {
     onVideoSelect: (videoId: string) => void;
@@ -10,20 +11,38 @@ interface PlaylistsPageProps {
 
 export default function PlaylistsPage({ onVideoSelect }: PlaylistsPageProps) {
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
+    const [activePlaylist, setActivePlaylist] = useState<string | null>(null);
 
     useEffect(() => {
-        setPlaylists(getPlaylists());
+        const loadedPlaylists = getPlaylists();
+        setPlaylists(loadedPlaylists);
+        if (loadedPlaylists.length > 0 && !activePlaylist) {
+            setActivePlaylist(loadedPlaylists[0].id);
+        }
     }, []);
 
     const handleDeletePlaylist = (playlistId: string) => {
         deletePlaylist(playlistId);
-        setPlaylists(getPlaylists());
+        // Update active playlist if we're deleting the current one
+        if (activePlaylist === playlistId) {
+            const remainingPlaylists = playlists.filter(p => p.id !== playlistId);
+            setActivePlaylist(remainingPlaylists.length > 0 ? remainingPlaylists[0].id : null);
+        }
+        setPlaylists(prev => prev.filter(p => p.id !== playlistId));
     };
 
-    const handleRemoveVideo = (e: React.MouseEvent, playlistId: string, videoId: string) => {
-        e.stopPropagation(); // Prevent video selection when removing
+    const handleRemoveVideo = async (e: React.MouseEvent, playlistId: string, videoId: string) => {
+        e.stopPropagation();
         removeVideoFromPlaylist(playlistId, videoId);
-        setPlaylists(getPlaylists());
+        setPlaylists(prev => prev.map(playlist => {
+            if (playlist.id === playlistId) {
+                return {
+                    ...playlist,
+                    videos: playlist.videos.filter(v => v.id !== videoId)
+                };
+            }
+            return playlist;
+        }));
     };
 
     const PlaylistContent = ({ playlist }: { playlist: Playlist }) => (
@@ -44,33 +63,43 @@ export default function PlaylistsPage({ onVideoSelect }: PlaylistsPageProps) {
                     </Button>
                 </div>
 
-                <div className="grid gap-4">
-                    {playlist.videos.map(video => (
-                        <div
-                            key={video.id}
-                            className="flex gap-3 items-center bg-white/10 p-3 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-                            onClick={() => onVideoSelect(video.id)}
-                        >
-                            <img
-                                src={video.thumbnail}
-                                alt={video.title}
-                                className="w-32 h-20 object-cover rounded"
-                            />
-                            <div className="flex-1 justify-start h-full">
-                                <h3 className="font-medium text-primary">{video.title}</h3>
-                                <p className="text-sm text-primary">
-                                    {video.channelTitle}
-                                </p>
-                            </div>
-                            <Button
-                                color={'red'}
-                                onClick={(e) => handleRemoveVideo(e, playlist.id, video.id)}
+                <AnimatePresence mode="popLayout" initial={false}>
+                    <div className="grid gap-4">
+                        {playlist.videos.map(video => (
+                            <motion.div
+                                key={video.id}
+                                layoutId={video.id}
+                                initial={{ opacity: 1, scale: 1 }}
+                                exit={{
+                                    opacity: 0,
+                                    scale: 0.8,
+                                    transition: { duration: 0.2 }
+                                }}
+                                layout
+                                className="flex gap-3 items-center bg-white/10 p-3 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                                onClick={() => onVideoSelect(video.id)}
                             >
-                                Remove
-                            </Button>
-                        </div>
-                    ))}
-                </div>
+                                <img
+                                    src={video.thumbnail}
+                                    alt={video.title}
+                                    className="w-32 h-20 object-cover rounded"
+                                />
+                                <div className="flex-1 justify-start h-full">
+                                    <h3 className="font-medium text-primary">{video.title}</h3>
+                                    <p className="text-sm text-primary">
+                                        {video.channelTitle}
+                                    </p>
+                                </div>
+                                <Button
+                                    color={'red'}
+                                    onClick={(e) => handleRemoveVideo(e, playlist.id, video.id)}
+                                >
+                                    Remove
+                                </Button>
+                            </motion.div>
+                        ))}
+                    </div>
+                </AnimatePresence>
             </div>
         </div>
     );
@@ -84,11 +113,33 @@ export default function PlaylistsPage({ onVideoSelect }: PlaylistsPageProps) {
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-6">My Playlists</h1>
-            {playlists.length > 0 ? (
-                <Tabs tabs={tabs} />
-            ) : (
-                <p>No playlists yet</p>
-            )}
+            <AnimatePresence mode="popLayout" initial={false}>
+                {playlists.length > 0 ? (
+                    <motion.div
+                        key="playlists"
+                        initial={{ opacity: 1 }}
+                        exit={{
+                            opacity: 0,
+                            transition: { duration: 0.2 }
+                        }}
+                    >
+                        <Tabs
+                            tabs={tabs}
+                            activeTab={activePlaylist}
+                            onTabChange={setActivePlaylist}
+                        />
+                    </motion.div>
+                ) : (
+                    <motion.p
+                        key="no-playlists"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        No playlists yet
+                    </motion.p>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
