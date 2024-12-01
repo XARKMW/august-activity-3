@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react';
 import { YouTubeSearchResult } from '../types/youtube';
 import VideoPlayer from './VideoPlayer';
 import {PlaylistManager} from "./PlaylistManager.tsx";
+import {Button} from "@/ui/button.tsx";
 
 export default function VideoSearch() {
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -33,12 +34,12 @@ export default function VideoSearch() {
                         placeholder="Search videos..."
                         className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <button
+                    <Button
                         type="submit"
-                        className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                        color={'emerald'}
                     >
                         Search
-                    </button>
+                    </Button>
                 </div>
             </form>
 
@@ -81,7 +82,7 @@ interface VideoCardProps {
     isSelected: boolean;
 }
 
-function VideoCard({ video, onClick, isSelected }: VideoCardProps) {
+function VideoCard({ video, onClick }: VideoCardProps) {
     const [showPlaylistManager, setShowPlaylistManager] = useState(false);
 
     return (
@@ -93,7 +94,7 @@ function VideoCard({ video, onClick, isSelected }: VideoCardProps) {
                     className="w-40 h-24 object-cover rounded cursor-pointer"
                     onClick={onClick}
                 />
-                <div className="flex-1">
+                <div className="flex-1 flex flex-col gap-2">
                     <h3
                         className="font-semibold line-clamp-2 text-sm cursor-pointer"
                         onClick={onClick}
@@ -103,15 +104,15 @@ function VideoCard({ video, onClick, isSelected }: VideoCardProps) {
                     <p className="text-xs text-gray-600 mt-1">
                         {video.snippet.channelTitle}
                     </p>
-                    <button
+                    <Button
                         onClick={(e) => {
                             e.stopPropagation();
                             setShowPlaylistManager(true);
                         }}
-                        className="mt-2 text-sm px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                        color={'blue'}
                     >
                         Add to Playlist
-                    </button>
+                    </Button>
                 </div>
             </div>
 

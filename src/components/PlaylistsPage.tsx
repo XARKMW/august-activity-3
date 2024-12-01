@@ -22,12 +22,12 @@ export default function PlaylistsPage() {
     };
 
     const PlaylistContent = ({ playlist }: { playlist: Playlist }) => (
-        <div className="w-full overflow-hidden relative h-full rounded-2xl bg-gradient-to-br from-purple-700 to-violet-900 min-h-fit">
+        <div className="w-full overflow-hidden relative h-full rounded-lg bg-white border border-border min-h-fit">
             <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-4 border-b border-border pb-4">
                     <div>
-                        <h2 className="text-xl font-bold text-white">{playlist.name}</h2>
-                        <p className="text-sm text-gray-200">
+                        <h2 className="text-xl font-bold text-primary">{playlist.name}</h2>
+                        <p className="text-sm text-primary">
                             {playlist.videos.length} videos
                         </p>
                     </div>
@@ -52,7 +52,7 @@ export default function PlaylistsPage() {
                             />
                             <div className="flex-1">
                                 <h3 className="font-medium text-white">{video.title}</h3>
-                                <p className="text-sm text-gray-200">
+                                <p className="text-sm text-primary">
                                     {video.channelTitle}
                                 </p>
                             </div>

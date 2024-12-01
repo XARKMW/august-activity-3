@@ -11,7 +11,7 @@ function App() {
 
     return (
         <div className="min-h-screen bg-gray-80">
-            <nav className="bg-white shadow-md mb-6">
+            <nav className="bg-white border border-border mb-6">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center h-16">
                         <div className="flex space-x-4">
@@ -26,19 +26,6 @@ function App() {
                                 outline
                             >
                                 My Playlists
-                            </Button>
-                            <Button
-                                onClick={() => {
-                                    toast({
-                                        title: "Scheduled: Catch up ",
-                                        description: "Friday, February 10, 2023 at 5:57 PM",
-                                        action: (
-                                            <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
-                                        ),
-                                    })
-                                }}
-                            >
-                                Add to calendar
                             </Button>
                         </div>
                     </div>

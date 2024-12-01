@@ -4,6 +4,8 @@ import { Playlist } from '../types/playlist';
 import { createPlaylist, addVideoToPlaylist, getPlaylists, deletePlaylist, removeVideoFromPlaylist } from '../utils/playlist';
 import { useToast } from '../ui/use-toast';
 import { ToastAction } from '../ui/toast';
+import {Button} from "@/ui/button.tsx";
+import {XMarkIcon} from "@heroicons/react/16/solid";
 
 interface PlaylistManagerProps {
     video: YouTubeSearchResult;
@@ -69,15 +71,15 @@ export function PlaylistManager({ video, onClose }: PlaylistManagerProps) {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto">
-                <div className="flex justify-between items-center mb-4">
+            <div className="bg-white rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto flex-col gap-2 flex">
+                <div className="flex justify-between items-center mb-2 ">
                     <h2 className="text-xl font-bold">Add to Playlist</h2>
-                    <button
+                    <Button
+                        plain
                         onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700"
                     >
-                        ×
-                    </button>
+                        <XMarkIcon className={'size-4'}/>
+                    </Button>
                 </div>
 
                 {isCreating ? (
@@ -86,41 +88,42 @@ export function PlaylistManager({ video, onClose }: PlaylistManagerProps) {
                             type="text"
                             value={newPlaylistName}
                             onChange={(e) => setNewPlaylistName(e.target.value)}
-                            placeholder="Playlist name"
+                            placeholder="New playlist name"
                             className="w-full px-3 py-2 border rounded-lg mb-2"
                             autoFocus
                         />
                         <div className="flex gap-2">
-                            <button
+                            <Button
+                                base
                                 type="submit"
-                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                             >
                                 Create
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                                color={'red'}
                                 type="button"
                                 onClick={() => setIsCreating(false)}
-                                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
                             >
                                 Cancel
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 ) : (
-                    <button
+                    <Button
                         onClick={() => setIsCreating(true)}
-                        className="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 mb-4"
+                        className="w-full"
+                        color={'green'}
                     >
                         Create New Playlist
-                    </button>
+                    </Button>
                 )}
-
                 <div className="space-y-2">
                     {playlists.map(playlist => (
-                        <button
+                        <Button
                             key={playlist.id}
                             onClick={() => handleAddToPlaylist(playlist.id)}
-                            className="w-full text-left p-3 hover:bg-gray-100 rounded-lg flex justify-between items-center"
+                            outline
+                            className={'w-full'}
                         >
                             <div>
                                 <div className="font-medium">{playlist.name}</div>
@@ -128,7 +131,7 @@ export function PlaylistManager({ video, onClose }: PlaylistManagerProps) {
                                     {playlist.videos.length} videos
                                 </div>
                             </div>
-                        </button>
+                        </Button>
                     ))}
                 </div>
             </div>
