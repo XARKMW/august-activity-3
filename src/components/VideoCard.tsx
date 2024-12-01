@@ -3,6 +3,7 @@ import {Button} from "@/ui/button.tsx";
 import {PlaylistManager} from "@/components/PlaylistManager.tsx";
 import {YouTubeSearchResult} from "@/types/youtube.ts";
 import {Dialog} from "@/ui/dialog.tsx";
+import { Plus } from 'lucide-react';
 
 interface VideoCardProps {
     video: YouTubeSearchResult;
@@ -39,8 +40,9 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
                                 e.stopPropagation();
                                 setShowPlaylistManager(true);
                             }}
-                            color={'blue'}
+                            outline
                     >
+                        <Plus className="h-4 w-4 mr-2" />
                         Add to Playlist
                     </Button>
                 </div>

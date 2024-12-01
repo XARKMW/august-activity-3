@@ -83,7 +83,7 @@ export function PlaylistManager({ video, onClose }: PlaylistManagerProps) {
                 </div>
 
                 {isCreating ? (
-                    <form onSubmit={handleCreatePlaylist} className="mb-4">
+                    <form onSubmit={handleCreatePlaylist} className="mb-4 pb-4 ">
                         <input
                             type="text"
                             value={newPlaylistName}
@@ -94,7 +94,7 @@ export function PlaylistManager({ video, onClose }: PlaylistManagerProps) {
                         />
                         <div className="flex gap-2">
                             <Button
-                                color={'green'}
+                                outline
                                 type="submit"
                             >
                                 Create

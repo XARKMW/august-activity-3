@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import { PlaylistManager } from '../components/PlaylistManager';
 import { Plus } from 'lucide-react';
 import {Dialog} from "@/ui/dialog.tsx";
+import LoaderSpinnerModal from "@/ui/LoaderSpinner.tsx";
 
 interface VideoPlayerProps {
     videoId: string;
@@ -19,7 +20,7 @@ export default function VideoPlayer({ videoId }: VideoPlayerProps) {
         enabled: Boolean(videoId)
     });
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <LoaderSpinnerModal/>;
 
     const handleAddToPlaylist = () => {
         setShowPlaylistManager(true);
@@ -45,7 +46,7 @@ export default function VideoPlayer({ videoId }: VideoPlayerProps) {
                         </h1>
                         <Button
                             onClick={handleAddToPlaylist}
-                            color={'blue'}
+                            outline
                         >
                             <Plus className="h-4 w-4 mr-2" />
                             Add to Playlist
