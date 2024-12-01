@@ -1,8 +1,9 @@
-// src/components/PlaylistManager.tsx
 import { useState } from 'react';
 import { YouTubeSearchResult } from '../types/youtube';
 import { Playlist } from '../types/playlist';
-import { createPlaylist, addVideoToPlaylist, getPlaylists } from '../utils/playlist';
+import { createPlaylist, addVideoToPlaylist, getPlaylists, deletePlaylist, removeVideoFromPlaylist } from '../utils/playlist';
+import { useToast } from '../ui/use-toast';
+import { ToastAction } from '../ui/toast';
 
 interface PlaylistManagerProps {
     video: YouTubeSearchResult;
@@ -13,6 +14,7 @@ export function PlaylistManager({ video, onClose }: PlaylistManagerProps) {
     const [playlists, setPlaylists] = useState<Playlist[]>(getPlaylists);
     const [newPlaylistName, setNewPlaylistName] = useState('');
     const [isCreating, setIsCreating] = useState(false);
+    const { toast } = useToast();
 
     const handleCreatePlaylist = (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,13 +23,48 @@ export function PlaylistManager({ video, onClose }: PlaylistManagerProps) {
             setPlaylists([...playlists, newPlaylist]);
             setNewPlaylistName('');
             setIsCreating(false);
+
+            toast({
+                title: `Playlist Created: ${newPlaylistName}`,
+                description: new Date().toLocaleString(),
+                action: (
+                    <ToastAction
+                        altText="Undo playlist creation"
+                        onClick={() => {
+                            deletePlaylist(newPlaylist.id);
+                            setPlaylists(getPlaylists());
+                        }}
+                    >
+                        Undo
+                    </ToastAction>
+                ),
+            });
         }
     };
 
     const handleAddToPlaylist = (playlistId: string) => {
+        const playlist = playlists.find(p => p.id === playlistId);
         addVideoToPlaylist(playlistId, video);
         setPlaylists(getPlaylists());
         onClose();
+
+        if (playlist) {
+            toast({
+                title: `Added to: ${playlist.name}`,
+                description: `Video "${video.snippet.title}" added to playlist`,
+                action: (
+                    <ToastAction
+                        altText="Undo add to playlist"
+                        onClick={() => {
+                            removeVideoFromPlaylist(playlistId, video.id.videoId);
+                            setPlaylists(getPlaylists());
+                        }}
+                    >
+                        Undo
+                    </ToastAction>
+                ),
+            });
+        }
     };
 
     return (

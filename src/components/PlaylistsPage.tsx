@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Playlist } from '../types/playlist';
 import { getPlaylists, deletePlaylist, removeVideoFromPlaylist } from '../utils/playlist';
 import { Tabs } from "../ui/Tabs";
+import {Button} from "@/ui/button.tsx";
 
 export default function PlaylistsPage() {
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -30,12 +31,12 @@ export default function PlaylistsPage() {
                             {playlist.videos.length} videos
                         </p>
                     </div>
-                    <button
+                    <Button
+                        color={'red'}
                         onClick={() => handleDeletePlaylist(playlist.id)}
-                        className="text-red-300 hover:text-red-100"
                     >
                         Delete Playlist
-                    </button>
+                    </Button>
                 </div>
 
                 <div className="grid gap-4">
@@ -55,12 +56,12 @@ export default function PlaylistsPage() {
                                     {video.channelTitle}
                                 </p>
                             </div>
-                            <button
+                            <Button
+                                color={'red'}
                                 onClick={() => handleRemoveVideo(playlist.id, video.id)}
-                                className="text-red-300 hover:text-red-100"
                             >
                                 Remove
-                            </button>
+                            </Button>
                         </div>
                     ))}
                 </div>

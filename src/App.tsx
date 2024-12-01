@@ -15,28 +15,19 @@ function App() {
                 <div className="container mx-auto px-4">
                     <div className="flex items-center h-16">
                         <div className="flex space-x-4">
-                            <button
+                            <Button
                                 onClick={() => setCurrentPage('search')}
-                                className={`px-4 py-2 rounded-lg transition-colors ${
-                                    currentPage === 'search'
-                                        ? 'bg-red-600 text-white'
-                                        : 'text-gray-600 hover:bg-gray-100'
-                                }`}
+                                outline
                             >
                                 Search
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 onClick={() => setCurrentPage('playlists')}
-                                className={`px-4 py-2 rounded-lg transition-colors ${
-                                    currentPage === 'playlists'
-                                        ? 'bg-red-600 text-white'
-                                        : 'text-gray-600 hover:bg-gray-100'
-                                }`}
+                                outline
                             >
                                 My Playlists
-                            </button>
+                            </Button>
                             <Button
-                                variant="outline"
                                 onClick={() => {
                                     toast({
                                         title: "Scheduled: Catch up ",
