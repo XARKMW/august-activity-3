@@ -1,17 +1,13 @@
-// src/App.tsx
-import './App.css'
-import { useState } from 'react'
 import VideoSearch from "./components/VideoSearch"
 import PlaylistsPage from "./components/PlaylistsPage"
-
+import {useState} from "react";
 type Page = 'search' | 'playlists'
 
 function App() {
     const [currentPage, setCurrentPage] = useState<Page>('search')
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Navigation */}
+        <div className="min-h-screen bg-gray-80">
             <nav className="bg-white shadow-md mb-6">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center h-16">
@@ -44,9 +40,9 @@ function App() {
             {/* Main content */}
             <main className="container mx-auto px-4">
                 {currentPage === 'search' ? (
-                    <VideoSearch />
+                    <VideoSearch/>
                 ) : (
-                    <PlaylistsPage />
+                    <PlaylistsPage/>
                 )}
             </main>
         </div>
