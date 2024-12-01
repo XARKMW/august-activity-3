@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Playlist } from '../types/playlist';
-import { getPlaylists, deletePlaylist, removeVideoFromPlaylist } from '../utils/playlist';
+import { Playlist, PlaylistVideo } from '../types/playlist';
+import { getPlaylists, deletePlaylist, removeVideoFromPlaylist, addVideoToPlaylist } from '../utils/playlist';
 import { Tabs } from "../ui/Tabs";
-import { Button } from "@/ui/button.tsx";
+import { Button } from "@/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from "../ui/use-toast";
+import { ToastAction } from "../ui/toast";
 
 interface PlaylistsPageProps {
     onVideoSelect: (videoId: string) => void;
@@ -12,6 +14,14 @@ interface PlaylistsPageProps {
 export default function PlaylistsPage({ onVideoSelect }: PlaylistsPageProps) {
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [activePlaylist, setActivePlaylist] = useState<string | null>(null);
+    const { toast } = useToast();
+    const [deletedItems, setDeletedItems] = useState<{
+        playlists: Playlist[];
+        videos: { playlistId: string; video: PlaylistVideo }[];
+    }>({
+        playlists: [],
+        videos: []
+    });
 
     useEffect(() => {
         const loadedPlaylists = getPlaylists();
@@ -22,17 +32,50 @@ export default function PlaylistsPage({ onVideoSelect }: PlaylistsPageProps) {
     }, []);
 
     const handleDeletePlaylist = (playlistId: string) => {
+        const playlistToDelete = playlists.find(p => p.id === playlistId);
+        if (!playlistToDelete) return;
+
         deletePlaylist(playlistId);
-        // Update active playlist if we're deleting the current one
         if (activePlaylist === playlistId) {
             const remainingPlaylists = playlists.filter(p => p.id !== playlistId);
             setActivePlaylist(remainingPlaylists.length > 0 ? remainingPlaylists[0].id : null);
         }
         setPlaylists(prev => prev.filter(p => p.id !== playlistId));
+        setDeletedItems(prev => ({
+            ...prev,
+            playlists: [...prev.playlists, playlistToDelete]
+        }));
+
+        toast({
+            title: `Playlist Deleted: ${playlistToDelete.name}`,
+            description: `${playlistToDelete.videos.length} videos removed`,
+            action: (
+                <ToastAction
+                    altText="Undo delete playlist"
+                    onClick={() => {
+                        const deletedPlaylist = getPlaylists().find(p => p.id === playlistId);
+                        if (!deletedPlaylist) {
+                            // Restore the playlist from our saved state
+                            setPlaylists(prev => [...prev, playlistToDelete]);
+                            setDeletedItems(prev => ({
+                                ...prev,
+                                playlists: prev.playlists.filter(p => p.id !== playlistId)
+                            }));
+                        }
+                    }}
+                >
+                    Undo
+                </ToastAction>
+            ),
+        });
     };
 
     const handleRemoveVideo = async (e: React.MouseEvent, playlistId: string, videoId: string) => {
         e.stopPropagation();
+        const playlist = playlists.find(p => p.id === playlistId);
+        const videoToRemove = playlist?.videos.find(v => v.id === videoId);
+        if (!playlist || !videoToRemove) return;
+
         removeVideoFromPlaylist(playlistId, videoId);
         setPlaylists(prev => prev.map(playlist => {
             if (playlist.id === playlistId) {
@@ -43,6 +86,41 @@ export default function PlaylistsPage({ onVideoSelect }: PlaylistsPageProps) {
             }
             return playlist;
         }));
+
+        setDeletedItems(prev => ({
+            ...prev,
+            videos: [...prev.videos, { playlistId, video: videoToRemove }]
+        }));
+
+        toast({
+            title: `Video Removed`,
+            description: `Removed "${videoToRemove.title}" from ${playlist.name}`,
+            action: (
+                <ToastAction
+                    altText="Undo remove video"
+                    onClick={() => {
+                        // Restore the video
+                        addVideoToPlaylist(playlistId, {
+                            id: { videoId: videoToRemove.id },
+                            snippet: {
+                                title: videoToRemove.title,
+                                thumbnails: { medium: { url: videoToRemove.thumbnail } },
+                                channelTitle: videoToRemove.channelTitle
+                            }
+                        } as any);
+                        setPlaylists(getPlaylists());
+                        setDeletedItems(prev => ({
+                            ...prev,
+                            videos: prev.videos.filter(v =>
+                                !(v.playlistId === playlistId && v.video.id === videoId)
+                            )
+                        }));
+                    }}
+                >
+                    Undo
+                </ToastAction>
+            ),
+        });
     };
 
     const PlaylistContent = ({ playlist }: { playlist: Playlist }) => (

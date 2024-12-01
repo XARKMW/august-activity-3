@@ -17,7 +17,7 @@ export default function VideoPlayer({ videoId }: VideoPlayerProps) {
 
     return (
         <div className="max-w-full">
-            <div className="relative w-full pt-[56.25%]">
+            <div className="relative pt-[56.25%]">
                 <iframe
                     className="absolute top-0 left-0 w-full h-full"
                     src={`https://www.youtube.com/embed/${videoId}`}
