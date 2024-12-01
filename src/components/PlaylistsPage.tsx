@@ -2,9 +2,13 @@ import { useState, useEffect } from 'react';
 import { Playlist } from '../types/playlist';
 import { getPlaylists, deletePlaylist, removeVideoFromPlaylist } from '../utils/playlist';
 import { Tabs } from "../ui/Tabs";
-import {Button} from "@/ui/button.tsx";
+import { Button } from "@/ui/button.tsx";
 
-export default function PlaylistsPage() {
+interface PlaylistsPageProps {
+    onVideoSelect: (videoId: string) => void;
+}
+
+export default function PlaylistsPage({ onVideoSelect }: PlaylistsPageProps) {
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
     useEffect(() => {
@@ -16,7 +20,8 @@ export default function PlaylistsPage() {
         setPlaylists(getPlaylists());
     };
 
-    const handleRemoveVideo = (playlistId: string, videoId: string) => {
+    const handleRemoveVideo = (e: React.MouseEvent, playlistId: string, videoId: string) => {
+        e.stopPropagation(); // Prevent video selection when removing
         removeVideoFromPlaylist(playlistId, videoId);
         setPlaylists(getPlaylists());
     };
@@ -43,22 +48,23 @@ export default function PlaylistsPage() {
                     {playlist.videos.map(video => (
                         <div
                             key={video.id}
-                            className="flex gap-3 items-center bg-white/10 p-3 rounded-lg"
+                            className="flex gap-3 items-center bg-white/10 p-3 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                            onClick={() => onVideoSelect(video.id)}
                         >
                             <img
                                 src={video.thumbnail}
                                 alt={video.title}
                                 className="w-32 h-20 object-cover rounded"
                             />
-                            <div className="flex-1">
-                                <h3 className="font-medium text-white">{video.title}</h3>
+                            <div className="flex-1 justify-start h-full">
+                                <h3 className="font-medium text-primary">{video.title}</h3>
                                 <p className="text-sm text-primary">
                                     {video.channelTitle}
                                 </p>
                             </div>
                             <Button
                                 color={'red'}
-                                onClick={() => handleRemoveVideo(playlist.id, video.id)}
+                                onClick={(e) => handleRemoveVideo(e, playlist.id, video.id)}
                             >
                                 Remove
                             </Button>

@@ -70,7 +70,7 @@ export function PlaylistManager({ video, onClose }: PlaylistManagerProps) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0  flex items-center justify-center z-50 rounded-lg">
             <div className="bg-white rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto flex-col gap-2 flex">
                 <div className="flex justify-between items-center mb-2 ">
                     <h2 className="text-xl font-bold">Add to Playlist</h2>
@@ -94,7 +94,6 @@ export function PlaylistManager({ video, onClose }: PlaylistManagerProps) {
                         />
                         <div className="flex gap-2">
                             <Button
-                                base
                                 type="submit"
                             >
                                 Create

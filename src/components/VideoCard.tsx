@@ -2,6 +2,7 @@ import {useState} from "react";
 import {Button} from "@/ui/button.tsx";
 import {PlaylistManager} from "@/components/PlaylistManager.tsx";
 import {YouTubeSearchResult} from "@/types/youtube.ts";
+import {Dialog} from "@/ui/dialog.tsx";
 
 interface VideoCardProps {
     video: YouTubeSearchResult;
@@ -42,13 +43,19 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
                 </div>
             </div>
 
-            {showPlaylistManager && (
+            <Dialog open={showPlaylistManager} onClose={() => setShowPlaylistManager(false)}>
                 <PlaylistManager
                     video={video}
                     onClose={() => setShowPlaylistManager(false)}
                 />
-            )}
+            </Dialog>
+
+            {/*{showPlaylistManager && (*/}
+            {/*    <PlaylistManager*/}
+            {/*        video={video}*/}
+            {/*        onClose={() => setShowPlaylistManager(false)}*/}
+            {/*    />*/}
+            {/*)}*/}
         </div>
-        //todo make scroll bar inside not global
     );
 }
