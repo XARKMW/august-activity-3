@@ -1,8 +1,8 @@
 import VideoSearch from "./components/VideoSearch"
 import PlaylistsPage from "./components/PlaylistsPage"
 import VideoPlayerPage from "./components/VideoPlayerPage"
-import {useState} from "react";
-import {Button} from "@/ui/button.tsx";
+import { useState } from "react";
+import { Button } from "@/ui/button.tsx";
 
 type Page = 'search' | 'playlists' | 'player'
 
@@ -15,6 +15,11 @@ interface PageState {
 
 function App() {
     const [currentPage, setCurrentPage] = useState<PageState>({ type: 'search' });
+    const [searchTerm, setSearchTerm] = useState<string>('');
+
+    const handlePageChange = (page: Page) => {
+        setCurrentPage({ type: page });
+    };
 
     return (
         <div className="min-h-screen bg-gray-80">
@@ -23,13 +28,13 @@ function App() {
                     <div className="flex items-center h-16">
                         <div className="flex space-x-4">
                             <Button
-                                onClick={() => setCurrentPage({ type: 'search' })}
+                                onClick={() => handlePageChange('search')}
                                 outline
                             >
                                 Search
                             </Button>
                             <Button
-                                onClick={() => setCurrentPage({ type: 'playlists' })}
+                                onClick={() => handlePageChange('playlists')}
                                 outline
                             >
                                 My Playlists
@@ -42,9 +47,13 @@ function App() {
             {/* Main content */}
             <main className="container mx-auto px-4">
                 {currentPage.type === 'search' && (
-                    <VideoSearch onVideoSelect={(videoId) =>
-                        setCurrentPage({ type: 'player', data: { videoId } })
-                    }/>
+                    <VideoSearch
+                        searchTerm={searchTerm}
+                        onSearchChange={setSearchTerm}
+                        onVideoSelect={(videoId) =>
+                            setCurrentPage({ type: 'player', data: { videoId } })
+                        }
+                    />
                 )}
                 {currentPage.type === 'playlists' && (
                     <PlaylistsPage onVideoSelect={(videoId) =>

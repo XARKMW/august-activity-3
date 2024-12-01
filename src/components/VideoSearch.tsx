@@ -1,16 +1,17 @@
-import { useQuery } from '@tanstack/react-query';
-import { searchVideos } from '../api/youtube';
-import { useState, useEffect } from 'react';
-import { YouTubeSearchResult } from '../types/youtube';
 import VideoCard from "@/components/VideoCard.tsx";
+import {YouTubeSearchResult} from "@/types/youtube.ts";
+import {searchVideos} from "@/api/youtube.ts";
+import {useQuery} from "@tanstack/react-query";
+import {useEffect, useState} from "react";
 
 interface VideoSearchProps {
+    searchTerm: string;
+    onSearchChange: (term: string) => void;
     onVideoSelect: (videoId: string) => void;
 }
 
-export default function VideoSearch({ onVideoSelect }: VideoSearchProps) {
-    const [searchTerm, setSearchTerm] = useState<string>('');
-    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
+export default function VideoSearch({ searchTerm, onSearchChange, onVideoSelect }: VideoSearchProps) {
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>(searchTerm);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -34,7 +35,7 @@ export default function VideoSearch({ onVideoSelect }: VideoSearchProps) {
                     <input
                         type="text"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => onSearchChange(e.target.value)}
                         placeholder="Search videos..."
                         className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
