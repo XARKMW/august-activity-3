@@ -1,6 +1,9 @@
 import VideoSearch from "./components/VideoSearch"
 import PlaylistsPage from "./components/PlaylistsPage"
 import {useState} from "react";
+import {Button} from "@/ui/button.tsx";
+import {toast} from "@/ui/use-toast.ts";
+import {ToastAction} from "@/ui/toast.tsx";
 type Page = 'search' | 'playlists'
 
 function App() {
@@ -32,6 +35,20 @@ function App() {
                             >
                                 My Playlists
                             </button>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    toast({
+                                        title: "Scheduled: Catch up ",
+                                        description: "Friday, February 10, 2023 at 5:57 PM",
+                                        action: (
+                                            <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+                                        ),
+                                    })
+                                }}
+                            >
+                                Add to calendar
+                            </Button>
                         </div>
                     </div>
                 </div>

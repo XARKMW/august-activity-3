@@ -1,4 +1,3 @@
-// src/components/VideoSearch.tsx
 import { useQuery } from '@tanstack/react-query';
 import { searchVideos } from '../api/youtube';
 import { FormEvent, useState } from 'react';
