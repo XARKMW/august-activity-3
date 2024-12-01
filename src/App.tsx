@@ -1,13 +1,20 @@
 import VideoSearch from "./components/VideoSearch"
 import PlaylistsPage from "./components/PlaylistsPage"
+import VideoPlayerPage from "./components/VideoPlayerPage"
 import {useState} from "react";
 import {Button} from "@/ui/button.tsx";
-import {toast} from "@/ui/use-toast.ts";
-import {ToastAction} from "@/ui/toast.tsx";
-type Page = 'search' | 'playlists'
+
+type Page = 'search' | 'playlists' | 'player'
+
+interface PageState {
+    type: Page;
+    data?: {
+        videoId?: string;
+    };
+}
 
 function App() {
-    const [currentPage, setCurrentPage] = useState<Page>('search')
+    const [currentPage, setCurrentPage] = useState<PageState>({ type: 'search' });
 
     return (
         <div className="min-h-screen bg-gray-80">
@@ -16,13 +23,13 @@ function App() {
                     <div className="flex items-center h-16">
                         <div className="flex space-x-4">
                             <Button
-                                onClick={() => setCurrentPage('search')}
+                                onClick={() => setCurrentPage({ type: 'search' })}
                                 outline
                             >
                                 Search
                             </Button>
                             <Button
-                                onClick={() => setCurrentPage('playlists')}
+                                onClick={() => setCurrentPage({ type: 'playlists' })}
                                 outline
                             >
                                 My Playlists
@@ -34,10 +41,21 @@ function App() {
 
             {/* Main content */}
             <main className="container mx-auto px-4">
-                {currentPage === 'search' ? (
-                    <VideoSearch/>
-                ) : (
-                    <PlaylistsPage/>
+                {currentPage.type === 'search' && (
+                    <VideoSearch onVideoSelect={(videoId) =>
+                        setCurrentPage({ type: 'player', data: { videoId } })
+                    }/>
+                )}
+                {currentPage.type === 'playlists' && (
+                    <PlaylistsPage onVideoSelect={(videoId) =>
+                        setCurrentPage({ type: 'player', data: { videoId } })
+                    }/>
+                )}
+                {currentPage.type === 'player' && currentPage.data?.videoId && (
+                    <VideoPlayerPage
+                        videoId={currentPage.data.videoId}
+                        onBack={() => setCurrentPage({ type: 'search' })}
+                    />
                 )}
             </main>
         </div>
