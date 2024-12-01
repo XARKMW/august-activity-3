@@ -1,12 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { getVideoDetails } from '../api/youtube';
 import type { YouTubeVideoDetails } from '../types/youtube';
+import { Button } from '../ui/button';
+import { PlaylistManager } from '../components/PlaylistManager';
+import { Plus } from 'lucide-react';
+import {Dialog} from "@/ui/dialog.tsx";
 
 interface VideoPlayerProps {
     videoId: string;
 }
 
 export default function VideoPlayer({ videoId }: VideoPlayerProps) {
+    const [showPlaylistManager, setShowPlaylistManager] = useState(false);
     const { data: videoDetails, isLoading } = useQuery<YouTubeVideoDetails>({
         queryKey: ['video', videoId],
         queryFn: () => getVideoDetails(videoId),
@@ -14,6 +20,10 @@ export default function VideoPlayer({ videoId }: VideoPlayerProps) {
     });
 
     if (isLoading) return <div>Loading...</div>;
+
+    const handleAddToPlaylist = () => {
+        setShowPlaylistManager(true);
+    };
 
     return (
         <div className="max-w-full">
@@ -29,9 +39,18 @@ export default function VideoPlayer({ videoId }: VideoPlayerProps) {
 
             {videoDetails && (
                 <div className="mt-4 p-4 bg-white rounded-lg shadow">
-                    <h1 className="text-2xl font-bold">
-                        {videoDetails.snippet.title}
-                    </h1>
+                    <div className="flex items-start justify-between gap-4">
+                        <h1 className="text-2xl font-bold">
+                            {videoDetails.snippet.title}
+                        </h1>
+                        <Button
+                            onClick={handleAddToPlaylist}
+                            color={'blue'}
+                        >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add to Playlist
+                        </Button>
+                    </div>
                     <div className="flex items-center justify-between mt-2">
                         <p className="text-gray-600">
                             {videoDetails.snippet.channelTitle}
@@ -46,6 +65,29 @@ export default function VideoPlayer({ videoId }: VideoPlayerProps) {
                     </p>
                 </div>
             )}
+
+            <Dialog open={showPlaylistManager } onClose={() => setShowPlaylistManager(false)}>
+                <PlaylistManager
+                    video={{
+                        kind: 'youtube#searchResult',
+                        etag: '',
+                        id: {
+                            kind: 'youtube#video',
+                            videoId: videoId
+                        },
+                        snippet: {
+                            publishedAt: videoDetails!.snippet.publishedAt,
+                            channelId: videoDetails!.snippet.channelId,
+                            title: videoDetails!.snippet.title,
+                            description: videoDetails!.snippet.description,
+                            thumbnails: videoDetails!.snippet.thumbnails,
+                            channelTitle: videoDetails!.snippet.channelTitle,
+                            publishTime: videoDetails!.snippet.publishedAt
+                        }
+                    }}
+                    onClose={() => setShowPlaylistManager(false)}
+                />
+        </Dialog>
         </div>
     );
 }

@@ -94,6 +94,7 @@ export function PlaylistManager({ video, onClose }: PlaylistManagerProps) {
                         />
                         <div className="flex gap-2">
                             <Button
+                                color={'green'}
                                 type="submit"
                             >
                                 Create
