@@ -13,7 +13,7 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
     const [showPlaylistManager, setShowPlaylistManager] = useState(false);
 
     return (
-        <div className="bg-white rounded-lg border border-border overflow-hidden">
+        <div className="bg-white rounded-lg border border-border overflow-hidden ">
             <div className="flex flew-row gap-3 p-2 h-32">
                 <img
                     src={video.snippet.thumbnails.medium.url}

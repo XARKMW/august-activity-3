@@ -3,6 +3,7 @@ import {YouTubeSearchResult} from "@/types/youtube.ts";
 import {searchVideos} from "@/api/youtube.ts";
 import {useQuery} from "@tanstack/react-query";
 import {useEffect, useState} from "react";
+import LoaderSpinnerModal from "@/ui/LoaderSpinner.tsx";
 
 interface VideoSearchProps {
     searchTerm: string;
@@ -41,9 +42,9 @@ export default function VideoSearch({ searchTerm, onSearchChange, onVideoSelect 
                     />
                 </div>
             </div>
-
+            {isLoading && <LoaderSpinnerModal/>}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {isLoading && <div>Loading...</div>}
+
                 {error instanceof Error && <div>Error: {error.message}</div>}
 
                 {data?.items.map((video: YouTubeSearchResult) => (

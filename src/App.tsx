@@ -2,7 +2,7 @@ import VideoSearch from "./components/VideoSearch"
 import PlaylistsPage from "./components/PlaylistsPage"
 import VideoPlayerPage from "./components/VideoPlayerPage"
 import { useState } from "react";
-import { Button } from "@/ui/button.tsx";
+import {Tabs, TabsList, TabsTrigger} from "@/ui/ShadTabs.tsx";
 
 type Page = 'search' | 'playlists' | 'player'
 
@@ -25,26 +25,21 @@ function App() {
         <div className="min-h-screen bg-gray-80">
             <nav className="bg-white border border-border mb-6">
                 <div className="container mx-auto px-4">
-                    <div className="flex items-center h-16">
-                        <div className="flex space-x-4">
-                            <Button
-                                onClick={() => handlePageChange('search')}
-                                outline
-                            >
-                                Search
-                            </Button>
-                            <Button
-                                onClick={() => handlePageChange('playlists')}
-                                outline
-                            >
-                                My Playlists
-                            </Button>
-                        </div>
+                    <div className="flex items-center justify-center h-16">
+                        <Tabs
+                            value={currentPage.type}
+                            onValueChange={handlePageChange}
+                            className="w-full max-w-[400px]"
+                        >
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="search">Search</TabsTrigger>
+                                <TabsTrigger value="playlists">My Playlists</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
                     </div>
                 </div>
             </nav>
 
-            {/* Main content */}
             <main className="container mx-auto px-4">
                 {currentPage.type === 'search' && (
                     <VideoSearch
